@@ -28,22 +28,7 @@
             z-index: 1;
         }
 
-        .grid-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            grid-template-rows: repeat(20, 1fr);
-            pointer-events: none; /* Ensure it doesn't interfere with the game controls */
-            z-index: 2; /* Ensure the grid is on top of the canvas */
-        }
-
-        .grid-cell {
-            border: 1px solid rgba(255, 255, 255, 0.2); /* Light grid line */
-        }
+        
     </style>
 </head>
 <body>
@@ -51,14 +36,13 @@
         <div class="score"></div>
         <div class="lvl">0</div>
         <canvas class="tetris" width="240" height="400"></canvas>
-        <div class="grid-overlay"></div>
-    </div>
+        <canvas class="next" style="height:120px; width:120px; top: 105px; margin-left:15px; position: absolute;"></canvas>
+    </div>  
 
     <div class="player">
         <div class="score"></div>
         <div class="lvl"></div>
         <canvas class="tetris" width="240" height="400"></canvas>
-        <div class="grid-overlay"></div>
     </div>
 
 

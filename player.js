@@ -35,6 +35,8 @@ class Player {
         this.pos = { x: 0, y:0 }
         this.matrix = null;
         this.score = 0;
+        const pieces = 'ILJOTSZ';
+        this.prevMatrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
         
         // start with a new piece
         this.reset();
@@ -95,14 +97,14 @@ class Player {
     reset()
     {
         const pieces = 'ILJOTSZ';
-        this.matrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
+        this.matrix = this.prevMatrix
+        this.prevMatrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
         this.pos.y = 0;
         this.pos.x = (this.arena.matrix[0].length / 2 | 0) -
                      (this.matrix[0].length / 2 | 0);
         if (this.arena.collide(this)) {
             this.arena.clear();
             this.score = 0;
-            updateScore();
         }
     }
 

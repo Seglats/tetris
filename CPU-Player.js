@@ -3,7 +3,7 @@ class CPUPlayer extends Player {
         super(tetris);
     }
 
-    // Make a move based on a simple heuristic
+    
     makeMove() {
         let bestScore = -1;
         let bestRotation = 0;
