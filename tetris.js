@@ -4,6 +4,8 @@ class Tetris {
         this.canvas = element.querySelector('canvas');
         this.context = this.canvas.getContext('2d');
         this.context.scale(20, 20); // Scale the drawing context for rendering
+        this.isCPU = false;
+
 
         this.arena = new Arena(12, 20); // Initialize the game arena
         this.player = new Player(this); // Initialize the player
@@ -86,6 +88,9 @@ class Tetris {
 
     // Update the score display on the page
     updateScore(score) {
-        this.element.querySelector('.score').innerText = score; // Set the score text
+        this.element.querySelector('.score').innerText = "Score: " +  score; // Set the score text
+    }
+    updateLevel(level) {
+        this.element.querySelector('.lvl').innerText = "Level: " +  level; // Set the score text
     }
 }

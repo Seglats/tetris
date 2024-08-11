@@ -1,5 +1,6 @@
 class Player {
     constructor(tetris) {
+        this.CPU = false;
         // constant for drop intervals
         this.DROP_1 = 1000;
         this.DROP_2 = 900;
@@ -12,15 +13,16 @@ class Player {
         this.DROP_9 = 200;
 
         this.Level = 1;
+        
 
-        this.thresh_2 = 100;
-        this.thresh_3 = 250;
-        this.thresh_4 = 450;
-        this.thresh_5 = 700;
-        this.thresh_6 = 1000;
-        this.thresh_7 = 1350;
-        this.thresh_8 = 1750;
-        this.thresh_9 = 2200;
+        this.thresh_2 = 1000;
+        this.thresh_3 = 5000;
+        this.thresh_4 = 15000;
+        this.thresh_5 = 45000;
+        this.thresh_6 = 90000;
+        this.thresh_7 = 15000;
+        this.thresh_8 = 22000;
+        this.thresh_9 = 30000;
 
         this.DROP_FAST = 50;
 
@@ -37,9 +39,10 @@ class Player {
         this.score = 0;
         const pieces = 'ILJOTSZ';
         this.prevMatrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
-        
+
         // start with a new piece
         this.reset();
+        this.tetris.updateLevel(1);
     } 
 
     // drop the piece down by one row
@@ -58,30 +61,39 @@ class Player {
     calc_level(){
         if (this.score < this.thresh_2){
             this.Level = 1;
+            this.tetris.updateLevel(this.Level);
         }
         else if (this.score < this.thresh_3){
             this.Level = 2;
+            this.tetris.updateLevel(this.Level);
         }
         else if (this.score < this.thresh_4){
             this.Level = 3;
+            this.tetris.updateLevel(this.Level);
         }
         else if (this.score < this.thresh_5){
             this.Level = 4;
+            this.tetris.updateLevel(this.Level);
         }
         else if (this.score < this.thresh_6){
             this.Level = 5;
+            this.tetris.updateLevel(this.Level);
         }
         else if (this.score < this.thresh_7){
             this.Level = 6;
+            this.tetris.updateLevel(this.Level);
         }
         else if (this.score < this.thresh_8){
             this.Level = 7;
+            this.tetris.updateLevel(this.Level);
         }
         else if (this.score < this.thresh_9){
             this.Level = 8;
+            this.tetris.updateLevel(this.Level);
         }
         else {
             this.Level = 9;
+            this.tetris.updateLevel(this.Level);
         }
         this.speed();
     }
@@ -99,12 +111,16 @@ class Player {
         const pieces = 'ILJOTSZ';
         this.matrix = this.prevMatrix
         this.prevMatrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
+
         this.pos.y = 0;
         this.pos.x = (this.arena.matrix[0].length / 2 | 0) -
                      (this.matrix[0].length / 2 | 0);
         if (this.arena.collide(this)) {
             this.arena.clear();
+            this.tetris.updateScore(0); 
             this.score = 0;
+            this.dropInterval = this.DROP_1;
+            this.Level = 1;
         }
     }
 
@@ -155,6 +171,13 @@ class Player {
         }
         this.pos.y--;
         this.drop();
+    }
+
+    simulatedrop(){
+        let simyY = this.pos.y;
+        while (!this.arena.collide(this)) {
+            simyY++;
+        }
     }
     speed() {
         if (this.Level === 9){

@@ -1,17 +1,18 @@
 const tetri = [];
 const playerElements = document.querySelectorAll(".player");
+const cpuElements = document.querySelectorAll(".cpu");
 
 playerElements.forEach((element, index) => {
-  let tetris;
-  if (index === 0) {
-    tetris = new Tetris(element); // Human player
-  } else {
-    tetris = new Tetris(element);
-    tetris.player = new CPUPlayer(tetris); // AI player
-  }
+  const tetris = new Tetris(element);
   tetri.push(tetris);
 });
 
+cpuElements.forEach((element, index) => {
+  const CPU = new Tetris(element);
+  CPU.CPU = true;
+  CPU.arena.isCPU = true;
+  tetri.push(CPU);
+});
 const movementState = [
   { left: false, right: false, down: false }, // Player 1
   { left: false, right: false, down: false }, // Player 2
@@ -72,9 +73,12 @@ const keyListener = (event) => {
     
     if (event.type === "keydown" && !event.repeat) {
       if (event.keyCode === keyCodes[6]) {
-        console.log("Pause");
         player.arena.clear();
         player.arena.score=0;
+        player.dropInterval = this.DROP_1;
+        player.Level = 1;
+        player.tetris.updateLevel(1); 
+        player.tetris.updateScore(0); 
         player.reset();
       }
       else if (event.keyCode === keyCodes[0]) {
