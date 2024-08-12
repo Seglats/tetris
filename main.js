@@ -7,12 +7,11 @@ playerElements.forEach((element, index) => {
   tetri.push(tetris);
 });
 
-cpuElements.forEach((element, index) => {
-  const CPU = new Tetris(element);
-  CPU.CPU = true;
-  CPU.arena.isCPU = true;
-  tetri.push(CPU);
-});
+const cpuElement = document.querySelector('.cpu');
+const cpuTetris = new Tetris(cpuElement, true);
+//console.log(cpuTetris.player.isCPU);
+tetri.push(cpuTetris)
+
 const movementState = [
   { left: false, right: false, down: false }, // Player 1
   { left: false, right: false, down: false }, // Player 2

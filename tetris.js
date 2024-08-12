@@ -1,15 +1,14 @@
 class Tetris {
-  constructor(element) {
+  constructor(element, isCPU = false) {
     this.element = element;
     this.canvas = this.element.querySelector(".tetris");
     this.nextFigure = this.element.querySelector(".next");
     this.context = this.canvas.getContext("2d");
     this.nextContext = this.nextFigure.getContext("2d");
     this.context.scale(20, 20); // Scale the drawing context for rendering
-    this.isCPU = false;
     this.gamestate = true;
     this.arena = new Arena(12, 20); // Initialize the game arena
-    this.player = new Player(this); // Initialize the player
+    this.player = new Player(this, isCPU); // Initialize the player
 
     // Define colors for the different Tetris pieces
     this.colors = [
@@ -25,7 +24,7 @@ class Tetris {
 
     // Start the game loop
     let lastTime = 0;
-    
+
     this.update();
     this.player.drop();
 
@@ -33,7 +32,7 @@ class Tetris {
   }
   update(time = 0) {
     if (!this.gamestate) return;
-    
+
     const deltaTime = time - this.lastTime;
     this.lastTime = time;
     // Update the player state
@@ -51,22 +50,18 @@ class Tetris {
 
     this.drawMatrix(this.arena.matrix, { x: 0, y: 0 }, this.context);
     this.drawMatrix(this.player.matrix, this.player.pos, this.context);
-    this.nextContext.fillStyle = "black"; 
-    this.nextContext.fillRect(0,0, 4, 4)
-    this.drawMatrix(this.player.nextMatrix, { x: 0, y: 0 }, this.nextContext);
-  }
-  drawNextPiece() {
-    // Clear the next piece canvas
-    this.nextContext.fillStyle = "#000";
-    this.nextContext.fillRect(
-      0,
-      0,
-      this.nextFigure.width,
-      this.nextFigure.height
-    );
+    this.nextContext.fillStyle = "black";
+    this.nextContext.scale(20, 20);
+    this.nextFigure.width = 4 * 20; // 4 blocks wide
+    this.nextFigure.height = 4 * 20; // 4 blocks tall
 
-    // Draw the next piece using drawMatrix method
-    this.drawMatrix(this.player.nextMatrix, { x: 1, y: 1 }, this.nextContext);
+    this.nextContext.fillRect(0, 0, 4, 4);
+    this.drawMatrix(
+      this.player.nextMatrix,
+      { x: 0, y: 0 },
+      this.nextContext,
+      20
+    );
   }
 
   drawGrid() {
@@ -93,12 +88,17 @@ class Tetris {
   }
 
   // Draw a matrix (arena or piece) at a specific offset
-  drawMatrix(matrix, offset, context) {
+  drawMatrix(matrix, offset, context, scale = 1) {
     matrix.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value !== 0) {
           context.fillStyle = this.colors[value];
-          context.fillRect(x + offset.x, y + offset.y, 1, 1);
+          context.fillRect(
+            (x + offset.x) * scale,
+            (y + offset.y) * scale,
+            scale,
+            scale
+          );
         }
       });
     });
