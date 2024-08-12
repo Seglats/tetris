@@ -1,6 +1,8 @@
 class Player {
-  constructor(tetris, isCPU) {
+  constructor(tetris, isCPU, sharedQueue) {
     this.isCPU = isCPU;
+
+    this.sharedQueue = sharedQueue;
     // constant for drop intervals
     this.DROP_1 = 1000;
     this.DROP_2 = 900;
@@ -11,8 +13,6 @@ class Player {
     this.DROP_7 = 240;
     this.DROP_8 = 160;
     this.DROP_9 = 80;
-
-    
 
     this.Level = 1;
 
@@ -39,10 +39,9 @@ class Player {
     this.matrix = null;
     this.score = 0;
     const pieces = "ILJOTSZ";
-    this.nextMatrix = createPiece(
-      pieces[Math.floor(Math.random() * pieces.length)]
-    );
-
+    this.index = 0;
+    this.nextMatrix = this.sharedQueue.getNextPiece(this.index);
+    this.index += 1;
     // start with a new piece
     this.reset();
     this.tetris.updateLevel(1);
@@ -105,33 +104,33 @@ class Player {
   reset() {
     const pieces = "ILJOTSZ";
     this.matrix = this.nextMatrix;
-    this.nextMatrix = createPiece(
-      pieces[Math.floor(Math.random() * pieces.length)]
-    );
-
+    //console.log(this.matrix);
+    this.nextMatrix = this.sharedQueue.getNextPiece(this.index);
+    this.index += 1;
     this.pos.y = 0;
     this.pos.x =
       ((this.arena.matrix[0].length / 2) | 0) -
       ((this.matrix[0].length / 2) | 0);
     if (this.arena.collide(this)) {
-      console.log(this.isCPU);
-      if (this.isCPU) {
-        //console.log("cpu gameover");
-        this.arena.clear();
-        this.tetris.updateScore(0);
-        this.score = 0;
-        this.dropInterval = this.DROP_1;
-        this.Level = 1;
-        this.reset();
-        this.drop();
-      } else {
-        //console.log("gameover");
-        this.tetris.gamestate = false;
-        this.tetris.gameover(this.score);
-        this.showPopup();
-        this.arena.clear();
-      }
+      //console.log(this.isCPU);
+      this.respawn = true;
     }
+  }
+  resetCPU() {
+    this.arena.clear();
+    this.tetris.updateScore(0);
+    this.score = 0;
+    this.dropInterval = this.DROP_1;
+    this.Level = 1;
+    this.reset();
+    this.drop();
+  }
+
+  resetPlayer() {
+    this.tetris.gamestate = false;
+    this.tetris.gameover(this.score);
+    this.showPopup();
+    this.arena.clear();
   }
 
   // rotate the piece
@@ -207,12 +206,24 @@ class Player {
 
   // Update the piece state based on elapsed time
   update(deltaTime) {
-    if (this.isCPU) {
-      this.performBestMove();
+    if (!this.respawn) {
+      if (this.isCPU) {
+        this.performBestMove(deltaTime);
+      } else {
+        //console.log("player");
+        this.dropCounter += deltaTime;
+        if (this.dropCounter > this.dropInterval) {
+          this.drop();
+        }
+      }
     } else {
       this.dropCounter += deltaTime;
-      if (this.dropCounter > this.dropInterval) {
-        this.drop();
+      if (this.dropCounter > this.dropInterval + 1000) {
+        if (this.isCPU) {
+          this.resetCPU();
+        }
+      } else {
+        this.resetPlayer();
       }
     }
   }
@@ -256,7 +267,7 @@ class Player {
   }
 
   // perform the best move based on a simple heuristic
-  performBestMove() {
+  performBestMove(deltaTime) {
     let bestScore = -Infinity;
     let bestMove = null;
 
@@ -296,10 +307,15 @@ class Player {
       for (let i = 0; i < bestMove.rotation; i++) {
         this.rotate(1);
       }
-      this.drop();
+      this.dropCounter += deltaTime;
+      if (this.dropCounter > this.dropInterval) {
+        this.drop();
+      }
     } else {
-      // If no valid move is found, just drop the piece
-      this.drop();
+      this.dropCounter += deltaTime;
+      if (this.dropCounter > this.drop_Fast) {
+        this.drop();
+      }
     }
   }
 

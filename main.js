@@ -1,14 +1,16 @@
+const sharedQueue = new Queue();
+
 const tetri = [];
 const playerElements = document.querySelectorAll(".player");
 const cpuElements = document.querySelectorAll(".cpu");
 
 playerElements.forEach((element, index) => {
-  const tetris = new Tetris(element);
+  const tetris = new Tetris(element, sharedQueue);
   tetri.push(tetris);
 });
 
 const cpuElement = document.querySelector('.cpu');
-const cpuTetris = new Tetris(cpuElement, true);
+const cpuTetris = new Tetris(cpuElement,  sharedQueue, true);
 //console.log(cpuTetris.player.isCPU);
 tetri.push(cpuTetris)
 

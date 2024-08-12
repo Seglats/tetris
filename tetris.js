@@ -1,5 +1,5 @@
 class Tetris {
-  constructor(element, isCPU = false) {
+  constructor(element, sharedQueue, isCPU = false) {
     this.element = element;
     this.canvas = this.element.querySelector(".tetris");
     this.nextFigure = this.element.querySelector(".next");
@@ -8,7 +8,7 @@ class Tetris {
     this.context.scale(20, 20); // Scale the drawing context for rendering
     this.gamestate = true;
     this.arena = new Arena(12, 20); // Initialize the game arena
-    this.player = new Player(this, isCPU); // Initialize the player
+    this.player = new Player(this, isCPU, sharedQueue); // Initialize the player
 
     // Define colors for the different Tetris pieces
     this.colors = [
