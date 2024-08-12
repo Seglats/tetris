@@ -31,26 +31,42 @@
       .text-block {
         display: flex;
         justify-content: space-between;
+        position: relative;
         width: 400px;
       }
+
+
       .next {
-        height: 120px;
-        width: 120px;
-        top: 105px;
         margin-left: 670px;
-        margin-top: -900px;
+        margin-top: -800px;
+        width: 120px;
+        height: 120px;
+      }
+      .popup{
+        display: flex; 
+        z-index: 1000;
+        flex-direction: column;
+        align-items: center;
+        background-color: grey; 
+        position: absolute;
+        top: 300px;
+        border-radius: 10px;
+
       }
       canvas {
         border: solid 0.2em #fff;
         height: 90vh;
-        position: relative;
+        
         z-index: 1;
       }
     </style>
   </head>
   <body>
     <div class="player">
-      <div style="display: flex; border:1px solid red; z-index: 1000;flex-direction: column; align-items: center; background-color: red;">
+        <div class="popup" id="popup" style="visibility: hidden;">
+          <h1 class="gameover" style="font-size: 50px; margin:40px 20px 40px 20px; "></h1>
+          <button class="again" style="padding:10px; margin-bottom:15px;">Play Again!</button>
+        </div> 
         <div class="text-block">
           <div class="score"></div>
           <div class="lvl"></div>
@@ -62,8 +78,8 @@
           width="240"
           height="400"
         ></canvas>
-      </div>
-      <canvas class="next"></canvas>
+      
+      <canvas class="next" width="4" height="4"></canvas>
     </div>
 
     <div class="cpu">
@@ -73,17 +89,19 @@
       </div>
       <canvas
         class="tetris"
+        id="playarea"
         style="width: 500px; height: 850px"
         width="240"
         height="400"
       ></canvas>
-      <canvas class="next"></canvas>
+      <canvas class="next" width="4" height="4"></canvas>
     </div>
+
+
 
     <script src="pieces.js"></script>
     <script src="arena.js"></script>
     <script src="player.js"></script>
-    <script src="CPU-Player.js"></script>
     <script src="tetris.js"></script>
     <script src="main.js"></script>
   </body>

@@ -18,7 +18,7 @@ const movementState = [
   { left: false, right: false, down: false }, // Player 2
 ];
 
-const moveInterval = 60; // Slower interval for smoother control
+const moveInterval = 80; // Slower interval for smoother control
 let movementIntervalId;
 let initialDelayId;
 
@@ -70,18 +70,17 @@ const keyListener = (event) => {
   keyBindings.forEach((keyCodes, index) => {
     const player = tetri[index].player;
     const state = movementState[index];
-    
+
     if (event.type === "keydown" && !event.repeat) {
       if (event.keyCode === keyCodes[6]) {
         player.arena.clear();
-        player.arena.score=0;
-        player.dropInterval = this.DROP_1;
+        player.arena.score = 0;
+        player.dropInterval = player.DROP_1; // Use player context
         player.Level = 1;
-        player.tetris.updateLevel(1); 
-        player.tetris.updateScore(0); 
+        player.tetris.updateLevel(1);
+        player.tetris.updateScore(0);
         player.reset();
-      }
-      else if (event.keyCode === keyCodes[0]) {
+      } else if (event.keyCode === keyCodes[0]) {
         state.left = true;
         player.move(-1); // Immediate move
         startMovement();
