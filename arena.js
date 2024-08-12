@@ -4,6 +4,16 @@ class Arena {
         this.matrix = Array.from({ length: height }, () => Array(width).fill(0));
     }
 
+    clearPiece(player) {
+        player.matrix.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) {
+                    this.matrix[y + player.pos.y][x + player.pos.x] = 0;
+                }
+            });
+        });
+    }
+    
     // clean the arean
     clear() {
         this.matrix.forEach(row => row.fill(0));

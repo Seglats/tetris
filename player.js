@@ -207,7 +207,7 @@ class Player {
 
   // Update the piece state based on elapsed time
   update(deltaTime) {
-    if (this.CPU) {
+    if (this.isCPU) {
       this.performBestMove();
     } else {
       this.dropCounter += deltaTime;
