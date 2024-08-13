@@ -131,6 +131,8 @@ class Player {
     this.tetris.gameover(this.score);
     this.showPopup();
     this.arena.clear();
+    this.respawn = false;
+
   }
 
   // rotate the piece
@@ -240,6 +242,7 @@ class Player {
 
     // merge the piece with the arena and evaluate the state
     this.arena.merge(this);
+    
     const linesCleared = this.arena.sweep();
     const height = this.getPileHeight();
 
@@ -272,50 +275,56 @@ class Player {
     let bestMove = null;
 
     const originalX = this.pos.x;
-    const originalMatrix = this.matrix;
+    const originalY = this.pos.y;
+    const originalMatrix = this.matrix.map(row => [...row]);  // Deep copy of the matrix
 
-    // test all possible moves (rotations and translations)
+    // Test all possible moves, including the initial unrotated state
     for (let rotation = 0; rotation < 4; rotation++) {
-      for (
-        let moveX = -this.arena.matrix[0].length / 2;
-        moveX < this.arena.matrix[0].length;
-        moveX++
-      ) {
-        this.pos.x = moveX;
-
-        // Skip invalid positions
-        if (this.arena.collide(this)) {
-          continue;
+        if (rotation > 0) {
+            this.rotate(1);  // Rotate the piece, but only after the first iteration
         }
 
-        const score = this.simulateDrop();
+        // Test all possible translations (left to right)
+        for (let moveX = -this.arena.matrix[0].length / 2; moveX < this.arena.matrix[0].length; moveX++) {
+            this.pos.x = moveX;
+            this.pos.y = originalY;  // Reset Y position before each simulation
 
-        if (score > bestScore) {
-          bestScore = score;
-          bestMove = { x: this.pos.x, rotation };
+            // Skip invalid positions
+            if (this.arena.collide(this)) {
+                continue;
+            }
+
+            const score = this.simulateDrop();
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = { x: this.pos.x, rotation: rotation };  // Save the number of rotations needed
+            }
+
+            this.pos.x = originalX;  // Restore X position after testing
         }
 
-        this.pos.x = originalX; // Restore position after testing
-      }
-      this.rotate(1); // Rotate piece
+        // Reset the matrix to its original state before the next rotation
+        this.matrix = originalMatrix.map(row => [...row]);
     }
 
     if (bestMove) {
-      // Execute the best move
-      this.matrix = originalMatrix;
-      this.pos.x = bestMove.x;
-      for (let i = 0; i < bestMove.rotation; i++) {
-        this.rotate(1);
-      }
-      this.dropCounter += deltaTime;
-      if (this.dropCounter > this.dropInterval) {
-        this.drop();
-      }
+        // Execute the best move
+        this.matrix = originalMatrix.map(row => [...row]);  // Reset the matrix before applying the best move
+        this.pos.x = bestMove.x;
+        for (let i = 0; i < bestMove.rotation; i++) {
+            this.rotate(1);
+        }
+
+        this.dropCounter += deltaTime;
+        if (this.dropCounter > this.dropInterval) {
+            this.drop();
+        }
     } else {
-      this.dropCounter += deltaTime;
-      if (this.dropCounter > this.drop_Fast) {
-        this.drop();
-      }
+        this.dropCounter += deltaTime;
+        if (this.dropCounter > this.DROP_FAST) {
+            this.drop();
+        }
     }
   }
 
